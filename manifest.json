@@ -4,13 +4,13 @@
   "manifest_version": 1,
   "description": "Fiche dresseur, équipe, Pokédex, inventaire, dés dirigés par le MJ et PV/distance sur la carte.",
   "author": "Vous",
-  "icon": "icon.svg",
+  "icon": "/owlbear_pokemon_extension/icon.svg",
   "action": {
     "title": "HUD Pokémon",
-    "icon": "icon.svg",
-    "popover": "index.html",
+    "icon": "/owlbear_pokemon_extension/icon.svg",
+    "popover": "/owlbear_pokemon_extension/index.html",
     "width": 420,
     "height": 640
   },
-  "background_url": "background.html"
+  "background_url": "/owlbear_pokemon_extension/background.html"
 }
