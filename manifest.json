@@ -1,0 +1,16 @@
+{
+  "name": "HUD Pokémon TTRPG",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "description": "Fiche dresseur, équipe, Pokédex, inventaire, dés dirigés par le MJ et PV/distance sur la carte.",
+  "author": "Vous",
+  "icon": "/icon.svg",
+  "action": {
+    "title": "HUD Pokémon",
+    "icon": "/icon.svg",
+    "popover": "/index.html",
+    "width": 420,
+    "height": 640
+  },
+  "background_url": "/background.html"
+}

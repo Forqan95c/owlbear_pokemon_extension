@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PV</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 10px;
+        font-family: "Segoe UI", sans-serif;
+        background: transparent;
+        color: #222;
+      }
+      .ligne {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .ligne label {
+        width: 70px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      input {
+        width: 70px;
+        padding: 4px 6px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 13px;
+      }
+      button {
+        width: 100%;
+        padding: 6px;
+        border-radius: 8px;
+        border: none;
+        background: #3a5fc4;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #2c4aa0;
+      }
+      .titre {
+        font-weight: 700;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="titre" id="titre">Points de Vie</div>
+    <div class="ligne"><label>PV actuels</label><input type="number" id="pv" /></div>
+    <div class="ligne"><label>PV max</label><input type="number" id="pvMax" /></div>
+    <button id="appliquer">Appliquer</button>
+
+    <script type="module">
+      import OBR from "https://esm.sh/@owlbear-rodeo/sdk@2?bundle";
+      import { getHpDuToken, definirHpDuToken } from "./js/obr.js";
+
+      let tokenId = null;
+
+      OBR.onReady(async () => {
+        const selection = await OBR.player.getSelection();
+        if (!selection || selection.length === 0) return;
+        tokenId = selection[0];
+
+        const [item] = await OBR.scene.items.getItems([tokenId]);
+        document.getElementById("titre").textContent = item?.name ? `PV — ${item.name}` : "Points de Vie";
+
+        const hp = await getHpDuToken(tokenId);
+        document.getElementById("pv").value = hp?.pv ?? 20;
+        document.getElementById("pvMax").value = hp?.pvMax ?? 20;
+
+        document.getElementById("appliquer").addEventListener("click", async () => {
+          const pv = parseInt(document.getElementById("pv").value, 10) || 0;
+          const pvMax = parseInt(document.getElementById("pvMax").value, 10) || 1;
+          await definirHpDuToken(tokenId, pv, pvMax);
+        });
+      });
+    </script>
+  </body>
+</html>
