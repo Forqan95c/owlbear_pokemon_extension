@@ -11,7 +11,7 @@
         padding: 24px;
       }
       .page {
-        max-width: 640px;
+        max-width: 720px;
         margin: 0 auto;
         color: white;
       }
@@ -20,6 +20,11 @@
         font-size: 16px;
         color: var(--jaune);
         margin-bottom: 20px;
+      }
+      h2 {
+        font-size: 14px;
+        color: var(--jaune);
+        margin: 24px 0 10px;
       }
       .liste-manifests {
         display: flex;
@@ -32,7 +37,7 @@
         padding: 14px;
         border: 2px solid var(--bleu-fonce);
       }
-      .manifest-item h2 {
+      .manifest-item h3 {
         margin: 0 0 4px;
         font-size: 15px;
       }
@@ -46,40 +51,80 @@
         background: rgba(0, 0, 0, 0.35);
         padding: 8px;
         border-radius: 6px;
-        font-size: 12px;
+        font-size: 11px;
         word-break: break-all;
+        user-select: all;
+      }
+      .note {
+        font-size: 12px;
+        opacity: 0.85;
+        line-height: 1.5;
+      }
+      .ordre {
+        background: var(--bleu-fonce);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.6;
       }
     </style>
   </head>
   <body>
     <div class="page">
       <h1>HUD Pokémon</h1>
-      <p>Cette extension se compose de 4 modules à installer séparément dans Owlbear Rodeo (Profil → Extensions → Add Extension), chacun avec sa propre URL de manifest ci-dessous :</p>
+      <p class="note">
+        4 modules à installer <strong>dans cet ordre</strong> dans Owlbear Rodeo (Profil → Extensions → Add Extension).
+        Chaque module = une bulle en haut à gauche (sauf Général, invisible).
+      </p>
+
+      <div class="ordre">
+        1. 🧑 Fiche Dresseur → 2. 🔴 Équipe → 3. 🎒 Sac &amp; Dés → 4. ⚙️ Général (PV + distance)
+      </div>
+
+      <h2>Netlify (recommandé)</h2>
       <div class="liste-manifests">
         <div class="manifest-item">
-          <h2>🧑 Fiche Dresseur</h2>
-          <p>Fiche du personnage + Pokédex.</p>
-          <code>manifest-fiche.json</code>
+          <h3>🧑 Fiche Dresseur</h3>
+          <p>Fiche perso + Pokédex.</p>
+          <code>https://cool-genie-255ffc.netlify.app/manifest-fiche.json</code>
         </div>
         <div class="manifest-item">
-          <h2>🔴 Équipe</h2>
-          <p>Les 6 Pokémon : invoquer, rappeler, relâcher, détails.</p>
-          <code>manifest-equipe.json</code>
+          <h3>🔴 Équipe Pokémon</h3>
+          <p>6 Pokémon : invoquer, rappeler, stats, relâcher.</p>
+          <code>https://cool-genie-255ffc.netlify.app/manifest-equipe.json</code>
         </div>
         <div class="manifest-item">
-          <h2>🎒 Sac &amp; Dés</h2>
-          <p>Inventaire (potions, baies, objets) + dés dirigés par le MJ.</p>
-          <code>manifest-inventaire.json</code>
+          <h3>🎒 Sac &amp; Dés</h3>
+          <p>Inventaire + dés contrôlés par le MJ.</p>
+          <code>https://cool-genie-255ffc.netlify.app/manifest-inventaire.json</code>
         </div>
         <div class="manifest-item">
-          <h2>⚙️ Général (sans bulle)</h2>
-          <p>PV sur tout token (clic droit) + mesure de distance en mètres.</p>
-          <code>manifest-general.json</code>
+          <h3>⚙️ Général (sans bulle)</h3>
+          <p>PV sur tokens + mesure de distance en mètres.</p>
+          <code>https://cool-genie-255ffc.netlify.app/manifest-general.json</code>
         </div>
       </div>
-      <p style="margin-top:20px;font-size:12px;opacity:0.8">
-        Complétez chaque URL avec l'adresse de cette page. Voir le README du dépôt pour le détail des étapes.
-      </p>
+
+      <h2>GitHub Pages (alternative)</h2>
+      <p class="note">Utilisez les manifests du dossier <code>manifests-github/</code> (URLs absolues) :</p>
+      <div class="liste-manifests">
+        <div class="manifest-item">
+          <h3>🧑 Fiche Dresseur</h3>
+          <code>https://forqan95c.github.io/owlbear_pokemon_extension/manifests-github/manifest-fiche.json</code>
+        </div>
+        <div class="manifest-item">
+          <h3>🔴 Équipe</h3>
+          <code>https://forqan95c.github.io/owlbear_pokemon_extension/manifests-github/manifest-equipe.json</code>
+        </div>
+        <div class="manifest-item">
+          <h3>🎒 Sac &amp; Dés</h3>
+          <code>https://forqan95c.github.io/owlbear_pokemon_extension/manifests-github/manifest-inventaire.json</code>
+        </div>
+        <div class="manifest-item">
+          <h3>⚙️ Général</h3>
+          <code>https://forqan95c.github.io/owlbear_pokemon_extension/manifests-github/manifest-general.json</code>
+        </div>
+      </div>
     </div>
   </body>
 </html>

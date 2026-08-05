@@ -1,0 +1,16 @@
+{
+  "name": "Pokémon — Équipe",
+  "version": "1.0.1",
+  "manifest_version": 1,
+  "description": "Les 6 Pokémon de l'équipe : invoquer, rappeler, relâcher, détails complets.",
+  "author": "Forqan",
+  "homepage_url": "https://forqan95c.github.io/owlbear_pokemon_extension/",
+  "icon": "https://forqan95c.github.io/owlbear_pokemon_extension/icons/action-equipe.svg",
+  "action": {
+    "title": "Équipe Pokémon",
+    "icon": "https://forqan95c.github.io/owlbear_pokemon_extension/icons/action-equipe.svg",
+    "popover": "https://forqan95c.github.io/owlbear_pokemon_extension/equipe.html",
+    "width": 380,
+    "height": 640
+  }
+}

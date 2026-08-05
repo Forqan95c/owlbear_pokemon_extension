@@ -1,0 +1,16 @@
+{
+  "name": "Pokémon — Fiche Dresseur",
+  "version": "1.0.1",
+  "manifest_version": 1,
+  "description": "Fiche du dresseur (nom, niveau, rôle, PV) et son Pokédex.",
+  "author": "Forqan",
+  "homepage_url": "https://forqan95c.github.io/owlbear_pokemon_extension/",
+  "icon": "https://forqan95c.github.io/owlbear_pokemon_extension/icons/action-fiche.svg",
+  "action": {
+    "title": "Fiche Dresseur",
+    "icon": "https://forqan95c.github.io/owlbear_pokemon_extension/icons/action-fiche.svg",
+    "popover": "https://forqan95c.github.io/owlbear_pokemon_extension/fiche.html",
+    "width": 380,
+    "height": 620
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Pokémon — Sac & Dés",
+  "version": "1.0.1",
+  "manifest_version": 1,
+  "description": "Inventaire (potions, baies, objets) et dés dirigés par le MJ.",
+  "author": "Forqan",
+  "homepage_url": "https://forqan95c.github.io/owlbear_pokemon_extension/",
+  "icon": "https://forqan95c.github.io/owlbear_pokemon_extension/icons/action-sac.svg",
+  "action": {
+    "title": "Sac & Dés",
+    "icon": "https://forqan95c.github.io/owlbear_pokemon_extension/icons/action-sac.svg",
+    "popover": "https://forqan95c.github.io/owlbear_pokemon_extension/inventaire.html",
+    "width": 380,
+    "height": 560
+  }
+}

@@ -1,14 +1,15 @@
 {
   "name": "Pokémon — Équipe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 1,
   "description": "Les 6 Pokémon de l'équipe : invoquer, rappeler, relâcher, détails complets.",
-  "author": "Vous",
-  "icon": "icons/action-equipe.svg",
+  "author": "Forqan",
+  "homepage_url": "https://cool-genie-255ffc.netlify.app/",
+  "icon": "/icons/action-equipe.svg",
   "action": {
     "title": "Équipe Pokémon",
-    "icon": "icons/action-equipe.svg",
-    "popover": "equipe.html",
+    "icon": "/icons/action-equipe.svg",
+    "popover": "/equipe.html",
     "width": 380,
     "height": 640
   }
