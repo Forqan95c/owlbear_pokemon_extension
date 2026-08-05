@@ -4,16 +4,17 @@
 // "Mesurer une distance" (en mètres), disponibles pour TOUT
 // token de la carte (joueur, PNJ, Pokémon).
 // ============================================================
-import OBR, { buildCurve, isImage } from "https://esm.sh/@owlbear-rodeo/sdk@2?bundle";
+import OBR, { buildCurve, isImage } from "https://esm.sh/@owlbear-rodeo/sdk@3.1.0";
 import { CONTEXT_MENU_HP_ID, TOOL_DISTANCE_ID, TOOL_DISTANCE_MODE_ID, METADATA_SETTINGS_KEY } from "./data.js";
 
 OBR.onReady(async () => {
+  try {
   // ---------- Menu contextuel : Points de Vie ----------
-  OBR.contextMenu.create({
+  await OBR.contextMenu.create({
     id: CONTEXT_MENU_HP_ID,
     icons: [
       {
-        icon: "/icons/heart.svg",
+        icon: "icons/heart.svg",
         label: "Points de Vie",
         filter: {
           every: [
@@ -25,7 +26,7 @@ OBR.onReady(async () => {
       },
     ],
     embed: {
-      url: "/hp.html",
+      url: "hp.html",
       height: 130,
     },
   });
@@ -33,13 +34,13 @@ OBR.onReady(async () => {
   // ---------- Outil : Mesurer une distance (en mètres) ----------
   await OBR.tool.create({
     id: TOOL_DISTANCE_ID,
-    icons: [{ icon: "/icons/ruler.svg", label: "Mesurer une distance" }],
+    icons: [{ icon: "icons/ruler.svg", label: "Mesurer une distance" }],
     defaultMode: TOOL_DISTANCE_MODE_ID,
   });
 
   await OBR.tool.createMode({
     id: TOOL_DISTANCE_MODE_ID,
-    icons: [{ icon: "/icons/ruler.svg", label: "Mesurer une distance" }],
+    icons: [{ icon: "icons/ruler.svg", label: "Mesurer une distance" }],
     cursors: [{ cursor: "crosshair" }],
     async onToolClick(context, event) {
       const metadata = await OBR.tool.getMetadata(TOOL_DISTANCE_ID);
@@ -71,7 +72,11 @@ OBR.onReady(async () => {
       const ligne = buildCurve()
         .points([premierPoint, event.pointerPosition])
         .tension(0)
-        .style({ strokeColor: "#F8D030", strokeWidth: 4, strokeOpacity: 0.9, fillOpacity: 0, closed: false })
+        .strokeColor("#F8D030")
+        .strokeWidth(4)
+        .strokeOpacity(0.9)
+        .fillOpacity(0)
+        .closed(false)
         .build();
       await OBR.scene.local.addItems([ligne]);
       setTimeout(() => {
@@ -84,6 +89,9 @@ OBR.onReady(async () => {
       OBR.tool.setMetadata(TOOL_DISTANCE_ID, { premierPoint: null, premierNom: null });
     },
   });
+  } catch (e) {
+    console.error("Erreur d'initialisation du module général Pokémon :", e);
+  }
 });
 
 function premierNomOuDefaut(nom) {

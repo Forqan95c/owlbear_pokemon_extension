@@ -1,18 +1,22 @@
 /* ============================================================
-   style.css — HUD Pokémon pour Owlbear Rodeo
+   style.css — HUD Pokémon, inspiré des menus Pokémon sur DS
    ============================================================ */
 
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@500;700;800&display=swap");
+
 :root {
-  --bleu-nuit: #1f2b4d;
-  --bleu-panel: #2c3d70;
-  --bleu-clair: #4a63a8;
-  --jaune: #ffcb05;
-  --rouge: #ee1515;
-  --vert: #78c850;
+  --bleu-nuit: #10182c;
+  --bleu-fonce: #1c2a4d;
+  --bleu-panel: #24346b;
+  --bleu-clair: #5b7fdb;
+  --jaune: #f7d51d;
+  --jaune-fonce: #d9a400;
+  --rouge: #e8432b;
+  --vert: #6abe30;
+  --blanc-creme: #f4f1e6;
   --texte: #1c1c1c;
-  --texte-clair: #f5f5f5;
-  --radius: 12px;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  --radius: 10px;
+  font-family: "Nunito", "Segoe UI", sans-serif;
 }
 
 * {
@@ -26,80 +30,111 @@ body {
 }
 
 .chargement {
-  padding: 24px;
+  padding: 30px 16px;
   text-align: center;
-  color: #666;
-  font-size: 13px;
+  color: #eee;
+  font-size: 12px;
+  background: var(--bleu-nuit);
+  border-radius: var(--radius);
+  margin: 8px;
+}
+
+.chargement.erreur {
+  color: #ffb3a7;
+  background: #3a1414;
+}
+
+.pokeball-spin {
+  width: 26px;
+  height: 26px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--rouge) 0%, var(--rouge) 48%, white 48%, white 52%, #eee 52%, #eee 100%);
+  border: 2px solid #1c1c1c;
+  animation: giro 1s linear infinite;
+}
+
+@keyframes giro {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .texte-vide {
   color: #888;
   font-size: 12px;
   font-style: italic;
+  padding: 6px 2px;
 }
+
+/* ---------- Fenêtre principale façon DS ---------- */
 
 .app-hud {
   padding: 8px;
   max-width: 420px;
-}
-
-/* ---------- Onglets globaux ---------- */
-
-.onglets-globaux {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-
-.onglet-global {
-  flex: 1;
-  padding: 6px 8px;
-  border: none;
-  border-radius: 8px;
-  background: #e4e7ef;
-  color: var(--texte);
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.onglet-global.actif {
   background: var(--bleu-nuit);
-  color: white;
+  min-height: 100%;
 }
+
+.fenetre-ds {
+  border-radius: 14px;
+}
+
+.carte-ds {
+  background: var(--blanc-creme);
+  border: 3px solid var(--bleu-panel);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+.carte-ds.sans-entete {
+  padding: 8px;
+}
+
+.section-titre {
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  color: var(--bleu-fonce);
+  letter-spacing: 0.02em;
+  padding: 6px 4px 8px;
+  border-bottom: 2px dashed #ccc4a8;
+  margin-bottom: 6px;
+}
+
+/* ---------- Barre GM (sélection de fiche) ---------- */
 
 .barre-gm {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  background: #eef1fa;
-  border-radius: 8px;
+  background: var(--bleu-panel);
+  color: white;
+  border-radius: 10px;
   padding: 6px 8px;
   margin-bottom: 8px;
   font-size: 12px;
+  border: 2px solid var(--bleu-fonce);
 }
 
 .barre-gm select {
   margin-left: 4px;
+  border-radius: 6px;
+  border: none;
+  padding: 2px 4px;
 }
 
-/* ---------- Fiche dresseur ---------- */
-
-.fiche-dresseur {
-  background: white;
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
+/* ---------- Entête dresseur ---------- */
 
 .entete-dresseur {
   display: flex;
   gap: 10px;
   align-items: center;
-  background: linear-gradient(135deg, var(--bleu-nuit), var(--bleu-panel));
-  color: var(--texte-clair);
-  padding: 10px;
+  background: linear-gradient(135deg, var(--bleu-fonce), var(--bleu-panel));
+  color: white;
+  padding: 12px;
+  border-bottom: 3px solid var(--jaune);
 }
 
 .portrait-conteneur {
@@ -107,12 +142,13 @@ body {
 }
 
 .portrait {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   border: 3px solid var(--jaune);
   object-fit: cover;
   background: #333;
+  image-rendering: pixelated;
 }
 
 .portrait-vide {
@@ -129,83 +165,100 @@ body {
 
 .nom-dresseur,
 .input-nom-dresseur {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--texte-clair);
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  color: white;
 }
 
 .input-nom-dresseur {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.25);
   border: none;
   border-radius: 6px;
-  padding: 2px 6px;
+  padding: 4px 6px;
   width: 100%;
 }
 
 .sous-info-dresseur {
   font-size: 12px;
   opacity: 0.9;
-  margin: 2px 0 4px;
+  margin: 6px 0 6px;
   display: flex;
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
+  font-weight: 700;
 }
 
 .input-mini {
-  width: 40px;
-  padding: 1px 3px;
+  width: 42px;
+  padding: 2px 4px;
   border-radius: 4px;
   border: none;
 }
 
 .input-role {
   flex: 1;
-  min-width: 80px;
-  padding: 1px 4px;
+  min-width: 90px;
+  padding: 2px 4px;
   border-radius: 4px;
   border: none;
 }
 
-/* ---------- Onglets internes ---------- */
+/* ---------- Onglets ---------- */
 
 .onglets {
   display: flex;
-  border-bottom: 2px solid #eee;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .onglet {
   flex: 1;
   padding: 8px;
-  border: none;
-  background: #f7f8fc;
+  border: 2px solid var(--bleu-panel);
+  border-radius: 10px;
+  background: var(--bleu-fonce);
+  color: #cfd8f5;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 12px;
-  color: #555;
 }
 
 .onglet.actif {
-  background: white;
+  background: var(--jaune);
   color: var(--bleu-nuit);
-  border-bottom: 3px solid var(--jaune);
+  border-color: var(--jaune-fonce);
 }
 
-/* ---------- Barre de PV ---------- */
+/* ---------- Barre de PV (façon jeu vidéo : HP jaune, barre à droite) ---------- */
 
 .barre-pv-conteneur {
-  position: relative;
-  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
 }
 
 .barre-pv-conteneur.dresseur {
-  max-width: 220px;
+  max-width: 240px;
+}
+
+.barre-pv-label {
+  font-family: "Press Start 2P", monospace;
+  font-size: 8px;
+  background: var(--jaune);
+  color: var(--bleu-nuit);
+  padding: 2px 4px;
+  border-radius: 3px;
+  flex-shrink: 0;
 }
 
 .barre-pv-fond {
+  flex: 1;
   height: 8px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   overflow: hidden;
 }
 
@@ -217,22 +270,24 @@ body {
 .barre-pv-texte {
   font-size: 10px;
   opacity: 0.9;
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: right;
 }
 
 /* ---------- Équipe / cartes Pokémon ---------- */
 
 .equipe-grille {
-  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .carte-pokemon {
-  border: 1px solid #e2e2e2;
-  border-radius: 10px;
+  border: 2px solid var(--bleu-panel);
+  border-radius: 12px;
   overflow: hidden;
-  background: #fafbff;
+  background: white;
 }
 
 .carte-pokemon.ko {
@@ -246,12 +301,16 @@ body {
   gap: 8px;
   padding: 6px 8px;
   cursor: pointer;
+  background: #eef0fa;
 }
 
 .sprite-conteneur {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
 .sprite-conteneur.petit {
@@ -290,15 +349,18 @@ body {
 }
 
 .niveau {
-  font-weight: 500;
-  font-size: 11px;
+  font-weight: 700;
+  font-size: 10px;
   color: #777;
+  background: #e2e2e2;
+  padding: 1px 5px;
+  border-radius: 4px;
 }
 
 .carte-pokemon-types {
   display: flex;
   gap: 4px;
-  margin: 2px 0;
+  margin: 3px 0;
 }
 
 .carte-pokemon-toggle {
@@ -308,12 +370,13 @@ body {
 
 .badge-type {
   display: inline-block;
-  padding: 1px 7px;
-  border-radius: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
   color: white;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 9px;
+  font-weight: 800;
   text-transform: uppercase;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.25);
 }
 
 .badge-statut {
@@ -330,7 +393,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding: 0 8px 8px;
+  padding: 6px 8px;
 }
 
 .pv-rapides {
@@ -339,13 +402,19 @@ body {
 }
 
 .btn {
-  padding: 6px 10px;
+  padding: 7px 10px;
   border-radius: 8px;
   border: none;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 12px;
   cursor: pointer;
   color: white;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.25);
+}
+
+.btn:active {
+  border-bottom-width: 1px;
+  transform: translateY(2px);
 }
 
 .btn-envoyer {
@@ -353,16 +422,17 @@ body {
 }
 
 .btn-rappeler {
-  background: #888;
+  background: #6b7594;
 }
 
 .btn-mini {
-  padding: 3px 7px;
+  padding: 3px 8px;
   border-radius: 6px;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   background: white;
   font-size: 11px;
   cursor: pointer;
+  font-weight: 700;
 }
 
 .btn-danger {
@@ -370,24 +440,29 @@ body {
   border-color: var(--rouge);
 }
 
+.btn-relacher {
+  width: 100%;
+  margin-top: 6px;
+}
+
 .btn-lien {
   background: none;
   border: none;
   color: var(--bleu-clair);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  padding: 6px 8px;
+  padding: 6px 4px;
 }
 
 .btn-ajouter-pokemon {
   background: var(--jaune);
-  color: #333;
+  color: var(--bleu-nuit);
 }
 
 .carte-pokemon-details {
   padding: 8px;
-  border-top: 1px dashed #eee;
+  border-top: 2px dashed #eee;
   background: #fdfdfd;
 }
 
@@ -402,7 +477,7 @@ body {
   display: flex;
   flex-direction: column;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   color: #555;
   gap: 2px;
 }
@@ -420,6 +495,52 @@ body {
   font-size: 12px;
 }
 
+.caracteristiques-grille {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+  background: #eef0fa;
+  border-radius: 8px;
+  padding: 6px;
+}
+
+.caracteristiques-grille.lecture {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.carac-champ {
+  display: flex;
+  flex-direction: column;
+  font-size: 8px;
+  font-weight: 800;
+  color: #556;
+  text-align: center;
+  gap: 2px;
+}
+
+.carac-champ input {
+  width: 100%;
+  text-align: center;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 11px;
+  padding: 2px;
+}
+
+.carac-champ-ro {
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+  color: #556;
+  text-align: center;
+}
+
+.carac-champ-ro strong {
+  font-size: 13px;
+  color: var(--bleu-fonce);
+}
+
 .attaques-liste {
   display: flex;
   flex-direction: column;
@@ -432,48 +553,49 @@ body {
   gap: 4px;
   font-size: 11px;
   flex-wrap: wrap;
+  background: #f7f8fc;
+  border-radius: 6px;
+  padding: 4px 6px;
 }
 
 .attaque-nom {
-  width: 90px;
+  width: 88px;
 }
 
 .attaque-degats,
 .attaque-pp {
-  width: 42px;
+  width: 40px;
 }
 
 .attaque-nom-ro {
-  font-weight: 700;
-  width: 90px;
+  font-weight: 800;
+  width: 88px;
 }
 
 .attaque-degats-ro,
 .attaque-pp-ro {
   color: #666;
+  font-weight: 600;
 }
 
 /* ---------- Inventaire ---------- */
 
-.inventaire {
-  padding: 8px;
-}
-
 .inventaire-groupe h4 {
   margin: 6px 0 4px;
-  font-size: 12px;
-  color: var(--bleu-nuit);
+  font-size: 11px;
+  color: var(--bleu-fonce);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  font-weight: 800;
 }
 
 .inventaire-ligne {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 0;
+  padding: 5px 4px;
   font-size: 12px;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid #eee;
 }
 
 .inv-nom {
@@ -486,18 +608,15 @@ body {
 
 .inv-nom-ro {
   flex: 1;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .inv-qte-ro {
   color: #777;
+  font-weight: 700;
 }
 
 /* ---------- Pokédex ---------- */
-
-.pokedex {
-  padding: 8px;
-}
 
 .pokedex-grille {
   display: grid;
@@ -506,22 +625,23 @@ body {
 }
 
 .pokedex-carte {
-  border: 1px solid #eee;
-  border-radius: 8px;
+  border: 2px solid #eee;
+  border-radius: 10px;
   padding: 6px;
   text-align: center;
   font-size: 11px;
+  background: #fafbff;
 }
 
 .pokedex-carte.capture {
-  background: #f1fbf0;
+  background: #eefaea;
   border-color: var(--vert);
 }
 
 .pokedex-nom,
 .pokedex-nom-ro {
-  font-weight: 700;
-  margin: 2px 0;
+  font-weight: 800;
+  margin: 3px 0;
 }
 
 .pokedex-desc {
@@ -534,12 +654,12 @@ body {
   display: block;
   font-size: 10px;
   margin-top: 2px;
+  font-weight: 700;
 }
 
 /* ---------- Dés ---------- */
 
 .panneau-des {
-  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -547,26 +667,29 @@ body {
 
 .carte-demande-de {
   background: var(--jaune);
+  border: 2px solid var(--jaune-fonce);
   border-radius: 10px;
   padding: 10px;
   text-align: center;
   font-size: 13px;
+  font-weight: 700;
+  color: var(--bleu-nuit);
 }
 
 .carte-gm-des {
-  background: white;
+  background: #eef0fa;
   border-radius: 10px;
   padding: 10px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .carte-gm-des h4 {
   margin: 0 0 6px;
   font-size: 12px;
+  color: var(--bleu-fonce);
 }
 
 .journal-des {
-  background: white;
+  background: #f7f8fc;
   border-radius: 10px;
   padding: 10px;
   max-height: 220px;
@@ -576,33 +699,40 @@ body {
 .journal-des h4 {
   margin: 0 0 6px;
   font-size: 12px;
+  color: var(--bleu-fonce);
 }
 
 .ligne-journal {
   font-size: 11px;
   padding: 4px 0;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .ligne-journal.resultat {
   color: #1c6b1c;
+  font-weight: 700;
 }
 
 /* ---------- Réglages ---------- */
 
 .reglages {
-  padding: 10px;
-  background: white;
-  border-radius: 10px;
+  padding: 4px;
 }
 
 .ligne-reglage {
   display: flex;
   flex-direction: column;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   gap: 4px;
-  max-width: 160px;
+  max-width: 180px;
+  color: var(--bleu-fonce);
+}
+
+.ligne-reglage input {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 .texte-aide {

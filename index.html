@@ -3,11 +3,83 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HUD Pokémon</title>
+    <title>HUD Pokémon — Extensions Owlbear Rodeo</title>
     <link rel="stylesheet" href="./css/style.css" />
+    <style>
+      body {
+        background: var(--bleu-nuit);
+        padding: 24px;
+      }
+      .page {
+        max-width: 640px;
+        margin: 0 auto;
+        color: white;
+      }
+      h1 {
+        font-family: "Press Start 2P", monospace;
+        font-size: 16px;
+        color: var(--jaune);
+        margin-bottom: 20px;
+      }
+      .liste-manifests {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .manifest-item {
+        background: var(--bleu-panel);
+        border-radius: 10px;
+        padding: 14px;
+        border: 2px solid var(--bleu-fonce);
+      }
+      .manifest-item h2 {
+        margin: 0 0 4px;
+        font-size: 15px;
+      }
+      .manifest-item p {
+        margin: 0 0 8px;
+        font-size: 13px;
+        opacity: 0.9;
+      }
+      .manifest-item code {
+        display: block;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        word-break: break-all;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="./js/app.js"></script>
+    <div class="page">
+      <h1>HUD Pokémon</h1>
+      <p>Cette extension se compose de 4 modules à installer séparément dans Owlbear Rodeo (Profil → Extensions → Add Extension), chacun avec sa propre URL de manifest ci-dessous :</p>
+      <div class="liste-manifests">
+        <div class="manifest-item">
+          <h2>🧑 Fiche Dresseur</h2>
+          <p>Fiche du personnage + Pokédex.</p>
+          <code>manifest-fiche.json</code>
+        </div>
+        <div class="manifest-item">
+          <h2>🔴 Équipe</h2>
+          <p>Les 6 Pokémon : invoquer, rappeler, relâcher, détails.</p>
+          <code>manifest-equipe.json</code>
+        </div>
+        <div class="manifest-item">
+          <h2>🎒 Sac &amp; Dés</h2>
+          <p>Inventaire (potions, baies, objets) + dés dirigés par le MJ.</p>
+          <code>manifest-inventaire.json</code>
+        </div>
+        <div class="manifest-item">
+          <h2>⚙️ Général (sans bulle)</h2>
+          <p>PV sur tout token (clic droit) + mesure de distance en mètres.</p>
+          <code>manifest-general.json</code>
+        </div>
+      </div>
+      <p style="margin-top:20px;font-size:12px;opacity:0.8">
+        Complétez chaque URL avec l'adresse de cette page. Voir le README du dépôt pour le détail des étapes.
+      </p>
+    </div>
   </body>
 </html>

@@ -1,7 +1,7 @@
 // ============================================================
 // obr.js — Fine couche au-dessus du SDK @owlbear-rodeo/sdk
 // ============================================================
-import OBR, { buildImage, buildShape, isImage } from "https://esm.sh/@owlbear-rodeo/sdk@2?bundle";
+import OBR, { buildImage, buildShape, isImage } from "https://esm.sh/@owlbear-rodeo/sdk@3.1.0";
 import {
   METADATA_KEY,
   METADATA_SETTINGS_KEY,
@@ -208,10 +208,10 @@ export async function definirHpDuToken(tokenId, pv, pvMax) {
       .locked(true)
       .disableHit(true)
       .name("hp-bar-fond")
+      .fillColor("#20201c")
+      .fillOpacity(0.9)
+      .strokeWidth(1)
       .build();
-    fond.style.fillColor = "#20201c";
-    fond.style.fillOpacity = 0.9;
-    fond.style.strokeWidth = 1;
     fond.metadata[ITEM_METADATA_HP_KEY] = true;
 
     const remplissage = buildShape()
@@ -224,9 +224,9 @@ export async function definirHpDuToken(tokenId, pv, pvMax) {
       .locked(true)
       .disableHit(true)
       .name("hp-bar-remplissage")
+      .fillColor(couleur)
+      .strokeWidth(0)
       .build();
-    remplissage.style.fillColor = couleur;
-    remplissage.style.strokeWidth = 0;
     remplissage.metadata[ITEM_METADATA_HP_KEY] = true;
 
     await OBR.scene.items.addItems([fond, remplissage]);
