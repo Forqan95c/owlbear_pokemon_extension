@@ -2,12 +2,55 @@
 // ui.js — Composants Preact partagés entre les 3 popovers
 // ============================================================
 import { h } from "https://esm.sh/preact@10.23.1";
-import { useState, useEffect } from "https://esm.sh/preact@10.23.1/hooks";
+import { useState, useEffect, useRef } from "https://esm.sh/preact@10.23.1/hooks";
 import htm from "https://esm.sh/htm@3.1.1";
 import { OBR, pickSpriteFromLibrary, envoyerPokemonSurScene, rappelerPokemon, envoyerMessageDes, onMessageDes } from "./obr.js";
 import { TYPE_COLORS, TYPE_LIST, STATUS_LIST, CATEGORIES_OBJET, DES_DISPONIBLES, emptyInventaireItem, emptyPokedexEntry } from "./data.js";
 
 export const html = htm.bind(h);
+
+function clamp(v, min, max) {
+  if (Number.isNaN(v)) return min;
+  return Math.max(min, Math.min(max, v));
+}
+
+// Convertit une saisie utilisateur en nombre fini, avec repli si vide/invalide.
+// Évite qu'un champ vidé (NaN) ne se propage dans les données partagées de la
+// scène et ne casse l'affichage chez tout le monde.
+export function versNombre(valeur, repli = 0) {
+  const n = Number(valeur);
+  return Number.isFinite(n) ? n : repli;
+}
+
+const STATUTS_RAPIDES = ["AUCUN", "PAR", "BRN", "PSN", "SLP", "KO"];
+
+// Champ texte "tamponné" : la frappe reste locale et instantanée (pas de
+// saut de curseur), la valeur n'est envoyée à la scène partagée qu'après une
+// courte pause (anti-scintillement + évite de spammer le réseau à chaque lettre).
+export function ChampTexte({ value, onCommit, delay = 500, multiline = false, ...props }) {
+  const [local, setLocal] = useState(value);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    setLocal(value);
+  }, [value]);
+
+  const onInput = (e) => {
+    const v = e.target.value;
+    setLocal(v);
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => onCommit(v), delay);
+  };
+
+  const onBlur = (e) => {
+    clearTimeout(timerRef.current);
+    onCommit(e.target.value);
+  };
+
+  return multiline
+    ? html`<textarea ...${props} value=${local} onInput=${onInput} onBlur=${onBlur}></textarea>`
+    : html`<input ...${props} value=${local} onInput=${onInput} onBlur=${onBlur} />`;
+}
 
 // ---------- Écrans d'état ----------
 
@@ -86,6 +129,15 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
 
   const envoyer = async () => {
     try {
+      // Si l'état pense que le Pokémon est déjà sur le terrain, on vérifie
+      // que le token existe encore (il a pu être supprimé manuellement).
+      if (pokemon.surLeTerrain && pokemon.itemIdSurScene) {
+        const existeEncore = await OBR.scene.items.getItems([pokemon.itemIdSurScene]);
+        if (existeEncore.length > 0) {
+          OBR.notification.show("Ce Pokémon est déjà sur le terrain.", "WARNING");
+          return;
+        }
+      }
       const itemId = await envoyerPokemonSurScene(pokemon, playerName);
       onChange({ ...pokemon, surLeTerrain: true, itemIdSurScene: itemId });
     } catch (e) {
@@ -94,7 +146,12 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
   };
 
   const rappeler = async () => {
-    await rappelerPokemon(pokemon.itemIdSurScene);
+    try {
+      await rappelerPokemon(pokemon.itemIdSurScene);
+    } catch (e) {
+      // Le token a peut-être déjà été supprimé manuellement : pas grave,
+      // on remet quand même l'état à jour ci-dessous.
+    }
     onChange({ ...pokemon, surLeTerrain: false, itemIdSurScene: null });
   };
 
@@ -109,7 +166,7 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
     <div class="carte-pokemon ${pokemon.statut === "KO" ? "ko" : ""}">
       <div class="carte-pokemon-entete" onClick=${() => setOuvert(!ouvert)}>
         <div class="sprite-conteneur">
-          ${pokemon.sprite ? html`<img src=${pokemon.sprite} class="sprite" alt=${pokemon.nom} /> ` : html`<div class="sprite sprite-vide">?</div>`}
+          ${pokemon.sprite ? html`<img src=${pokemon.sprite} class="sprite" alt=${pokemon.nom} /> ` : html`<div class="sprite sprite-vide"><div class="mini-pokeball"></div></div>`}
         </div>
         <div class="carte-pokemon-info">
           <div class="carte-pokemon-nom">
@@ -130,10 +187,32 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
           ? html`<button class="btn btn-envoyer" onClick=${envoyer}>⚡ Envoyer au combat</button>`
           : html`<button class="btn btn-rappeler" onClick=${rappeler}>↩ Rappeler</button>`}
         <div class="pv-rapides">
-          <button class="btn-mini" onClick=${() => majChamp("pv", Math.max(0, pokemon.pv - 5))}>−5</button>
-          <button class="btn-mini" onClick=${() => majChamp("pv", Math.min(pokemon.pvMax, pokemon.pv + 5))}>+5</button>
+          <button class="btn-mini" onClick=${() => majChamp("pv", clamp(pokemon.pv - 5, 0, pokemon.pvMax))} title="−5 PV">−5</button>
+          <button class="btn-mini" onClick=${() => majChamp("pv", clamp(pokemon.pv - 1, 0, pokemon.pvMax))} title="−1 PV">−1</button>
+          <button class="btn-mini" onClick=${() => majChamp("pv", clamp(pokemon.pv + 1, 0, pokemon.pvMax))} title="+1 PV">+1</button>
+          <button class="btn-mini" onClick=${() => majChamp("pv", clamp(pokemon.pv + 5, 0, pokemon.pvMax))} title="+5 PV">+5</button>
         </div>
       </div>
+
+      ${editable &&
+      html`
+        <div class="statuts-rapides">
+          ${STATUTS_RAPIDES.map((s) => {
+            const def = STATUS_LIST[s];
+            const actif = pokemon.statut === s;
+            return html`
+              <button
+                class="chip-statut ${actif ? "actif" : ""}"
+                style=${actif ? { background: def.color, borderColor: def.color } : {}}
+                onClick=${() => majChamp("statut", s)}
+                title=${def.label}
+              >
+                ${s === "AUCUN" ? "✓" : def.abbr}
+              </button>
+            `;
+          })}
+        </div>
+      `}
 
       ${ouvert &&
       html`
@@ -141,11 +220,11 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
           ${editable &&
           html`
             <div class="grille-champs">
-              <label>Espèce <input value=${pokemon.nom} onInput=${(e) => majChamp("nom", e.target.value)} /></label>
-              <label>Surnom <input value=${pokemon.surnom} onInput=${(e) => majChamp("surnom", e.target.value)} /></label>
-              <label>Niveau <input type="number" value=${pokemon.niveau} onInput=${(e) => majChamp("niveau", +e.target.value)} /></label>
-              <label>PV Max <input type="number" value=${pokemon.pvMax} onInput=${(e) => majChamp("pvMax", +e.target.value)} /></label>
-              <label>PV actuels <input type="number" value=${pokemon.pv} onInput=${(e) => majChamp("pv", +e.target.value)} /></label>
+              <label>Espèce <${ChampTexte} value=${pokemon.nom} onCommit=${(v) => majChamp("nom", v)} /></label>
+              <label>Surnom <${ChampTexte} value=${pokemon.surnom} onCommit=${(v) => majChamp("surnom", v)} /></label>
+              <label>Niveau <input type="number" min="1" max="100" value=${pokemon.niveau} onInput=${(e) => majChamp("niveau", clamp(+e.target.value, 1, 100))} /></label>
+              <label>PV Max <input type="number" min="1" value=${pokemon.pvMax} onInput=${(e) => majChamp("pvMax", Math.max(1, +e.target.value || 1))} /></label>
+              <label>PV actuels <input type="number" min="0" value=${pokemon.pv} onInput=${(e) => majChamp("pv", clamp(+e.target.value, 0, pokemon.pvMax))} /></label>
               <label>
                 Type 1
                 <select value=${pokemon.typePrimaire} onChange=${(e) => majChamp("typePrimaire", e.target.value)}>
@@ -172,7 +251,7 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
                 (c) => html`
                   <label class="carac-champ"
                     >${{ attaque: "Attaque", defense: "Défense", attaqueSpe: "Atq. Spé.", defenseSpe: "Déf. Spé.", vitesse: "Vitesse" }[c]}
-                    <input type="number" value=${pokemon.caracteristiques?.[c] ?? 10} onInput=${(e) => majCarac(c, +e.target.value)} />
+                    <input type="number" min="1" value=${pokemon.caracteristiques?.[c] ?? 10} onInput=${(e) => majCarac(c, Math.max(1, versNombre(e.target.value, 10)))} />
                   </label>
                 `
               )}
@@ -200,20 +279,26 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
                 <div class="attaque-ligne">
                   ${editable
                     ? html`
-                        <input class="attaque-nom" placeholder="Attaque" value=${a.nom} onInput=${(e) => majAttaque(idx, "nom", e.target.value)} />
+                        <${ChampTexte} class="attaque-nom" placeholder="Attaque" value=${a.nom} onCommit=${(v) => majAttaque(idx, "nom", v)} />
                         <select value=${a.type} onChange=${(e) => majAttaque(idx, "type", e.target.value)}>
                           ${TYPE_LIST.map((t) => html`<option value=${t}>${t}</option>`)}
                         </select>
-                        <input class="attaque-degats" type="number" title="Dégâts" value=${a.degats} onInput=${(e) => majAttaque(idx, "degats", +e.target.value)} />
-                        <input class="attaque-pp" type="number" title="PP actuels" value=${a.pp} onInput=${(e) => majAttaque(idx, "pp", +e.target.value)} />
+                        <input class="attaque-degats" type="number" min="0" title="Dégâts" value=${a.degats} onInput=${(e) => majAttaque(idx, "degats", Math.max(0, +e.target.value || 0))} />
+                        <input class="attaque-pp" type="number" min="0" title="PP actuels" value=${a.pp} onInput=${(e) => majAttaque(idx, "pp", clamp(+e.target.value, 0, a.ppMax || 99))} />
                         /
-                        <input class="attaque-pp" type="number" title="PP max" value=${a.ppMax} onInput=${(e) => majAttaque(idx, "ppMax", +e.target.value)} />
+                        <input class="attaque-pp" type="number" min="0" title="PP max" value=${a.ppMax} onInput=${(e) => majAttaque(idx, "ppMax", Math.max(0, +e.target.value || 0))} />
                       `
                     : html`
                         <span class="attaque-nom-ro">${a.nom || "—"}</span>
                         <${BadgeType} type=${a.type} />
                         <span class="attaque-degats-ro">${a.degats} dgts</span>
-                        <span class="attaque-pp-ro">${a.pp}/${a.ppMax} PP</span>
+                        <span class="pp-pastilles" title="${a.pp}/${a.ppMax} PP">
+                          PP
+                          ${Array.from({ length: Math.min(a.ppMax, 10) }, (_, i) =>
+                            html`<span class="pastille ${i < a.pp ? "pleine" : "vide"}"></span>`
+                          )}
+                          <span class="pp-chiffres">${a.pp}/${a.ppMax}</span>
+                        </span>
                       `}
                   ${editable &&
                   html`<button class="btn-mini" onClick=${() => majAttaque(idx, "pp", Math.max(0, a.pp - 1))} title="Utiliser (−1 PP)">−1 PP</button>`}
@@ -233,7 +318,11 @@ export function PokemonCard({ pokemon, editable, playerName, onChange, onDelete 
 
 export function Inventaire({ items, editable, onChange }) {
   const maj = (id, champ, valeur) => onChange(items.map((it) => (it.id === id ? { ...it, [champ]: valeur } : it)));
-  const supprimer = (id) => onChange(items.filter((it) => it.id !== id));
+  const supprimer = (id, nom) => {
+    if (confirm(`Supprimer "${nom || "cet objet"}" du sac ?`)) {
+      onChange(items.filter((it) => it.id !== id));
+    }
+  };
   const ajouter = () => onChange([...items, emptyInventaireItem()]);
 
   const parCategorie = CATEGORIES_OBJET.map((cat) => ({ cat, liste: items.filter((it) => it.categorie === cat) })).filter(
@@ -252,17 +341,24 @@ export function Inventaire({ items, editable, onChange }) {
                 <div class="inventaire-ligne">
                   ${editable
                     ? html`
-                        <input class="inv-nom" value=${it.nom} onInput=${(e) => maj(it.id, "nom", e.target.value)} placeholder="Nom de l'objet" />
-                        <input class="inv-qte" type="number" value=${it.quantite} onInput=${(e) => maj(it.id, "quantite", +e.target.value)} />
+                        <${ChampTexte} class="inv-nom" value=${it.nom} onCommit=${(v) => maj(it.id, "nom", v)} placeholder="Nom de l'objet" />
+                        <div class="stepper">
+                          <button class="btn-mini" onClick=${() => maj(it.id, "quantite", Math.max(0, it.quantite - 1))} title="−1">−</button>
+                          <input class="inv-qte" type="number" min="0" value=${it.quantite} onInput=${(e) => maj(it.id, "quantite", Math.max(0, +e.target.value || 0))} />
+                          <button class="btn-mini" onClick=${() => maj(it.id, "quantite", it.quantite + 1)} title="+1">+</button>
+                        </div>
                         <select value=${it.categorie} onChange=${(e) => maj(it.id, "categorie", e.target.value)}>
                           ${CATEGORIES_OBJET.map((c) => html`<option value=${c}>${c}</option>`)}
                         </select>
-                        <button class="btn-mini btn-danger" onClick=${() => supprimer(it.id)}>✕</button>
+                        <button class="btn-mini btn-danger" onClick=${() => supprimer(it.id, it.nom)} title="Supprimer">✕</button>
                       `
                     : html`
                         <span class="inv-nom-ro">${it.nom}</span>
-                        <span class="inv-qte-ro">×${it.quantite}</span>
-                        ${it.quantite > 0 && html`<button class="btn-mini" onClick=${() => maj(it.id, "quantite", it.quantite - 1)}>Utiliser</button>`}
+                        <div class="stepper lecture">
+                          <button class="btn-mini" onClick=${() => maj(it.id, "quantite", Math.max(0, it.quantite - 1))} title="Utiliser 1">−</button>
+                          <span class="inv-qte-ro">×${it.quantite}</span>
+                          <button class="btn-mini" onClick=${() => maj(it.id, "quantite", it.quantite + 1)} title="+1">+</button>
+                        </div>
                       `}
                 </div>
               `
@@ -279,7 +375,11 @@ export function Inventaire({ items, editable, onChange }) {
 
 export function Pokedex({ entries, editable, onChange }) {
   const maj = (id, champ, valeur) => onChange(entries.map((e) => (e.id === id ? { ...e, [champ]: valeur } : e)));
-  const supprimer = (id) => onChange(entries.filter((e) => e.id !== id));
+  const supprimer = (id, espece) => {
+    if (confirm(`Supprimer l'entrée "${espece || "sans nom"}" du Pokédex ?`)) {
+      onChange(entries.filter((e) => e.id !== id));
+    }
+  };
   const ajouter = () => onChange([...entries, emptyPokedexEntry()]);
 
   return html`
@@ -290,11 +390,11 @@ export function Pokedex({ entries, editable, onChange }) {
           (e) => html`
             <div class="pokedex-carte ${e.statutDex === "CAPTURE" ? "capture" : "vu"}">
               <div class="sprite-conteneur petit">
-                ${e.sprite ? html`<img src=${e.sprite} class="sprite" />` : html`<div class="sprite sprite-vide">?</div>`}
+                ${e.sprite ? html`<img src=${e.sprite} class="sprite" />` : html`<div class="sprite sprite-vide"><div class="mini-pokeball"></div></div>`}
               </div>
               ${editable
                 ? html`
-                    <input class="pokedex-nom" placeholder="Espèce" value=${e.espece} onInput=${(ev) => maj(e.id, "espece", ev.target.value)} />
+                    <${ChampTexte} class="pokedex-nom" placeholder="Espèce" value=${e.espece} onCommit=${(v) => maj(e.id, "espece", v)} />
                     <select value=${e.statutDex} onChange=${(ev) => maj(e.id, "statutDex", ev.target.value)}>
                       <option value="VU">👁 Vu</option>
                       <option value="CAPTURE">✅ Capturé</option>
@@ -302,7 +402,7 @@ export function Pokedex({ entries, editable, onChange }) {
                     <select value=${e.typePrimaire} onChange=${(ev) => maj(e.id, "typePrimaire", ev.target.value)}>
                       ${TYPE_LIST.map((t) => html`<option value=${t}>${t}</option>`)}
                     </select>
-                    <textarea placeholder="Description" value=${e.description} onInput=${(ev) => maj(e.id, "description", ev.target.value)}></textarea>
+                    <${ChampTexte} multiline=${true} placeholder="Description" value=${e.description} onCommit=${(v) => maj(e.id, "description", v)} />
                     <button class="btn-mini btn-danger" onClick=${() => supprimer(e.id)}>✕</button>
                   `
                 : html`
@@ -383,14 +483,14 @@ export function PanneauDes({ gm, moi, party }) {
                 ${party.map((p) => html`<option value=${p.id}>${p.name}</option>`)}
               </select>
             </label>
-            <label>Nb de dés <input type="number" min="1" value=${nombreDes} onInput=${(e) => setNombreDes(+e.target.value)} /></label>
+            <label>Nb de dés <input type="number" min="1" value=${nombreDes} onInput=${(e) => setNombreDes(Math.max(1, versNombre(e.target.value, 1)))} /></label>
             <label>
               Type de dé
               <select value=${typeDe} onChange=${(e) => setTypeDe(e.target.value)}>
                 ${DES_DISPONIBLES.map((d) => html`<option value=${d}>${d}</option>`)}
               </select>
             </label>
-            <label>Modificateur <input type="number" value=${modificateur} onInput=${(e) => setModificateur(+e.target.value)} /></label>
+            <label>Modificateur <input type="number" value=${modificateur} onInput=${(e) => setModificateur(versNombre(e.target.value, 0))} /></label>
             <label class="pleine-largeur">Intitulé <input placeholder="Jet d'Attaque, Esquive…" value=${label} onInput=${(e) => setLabel(e.target.value)} /></label>
           </div>
           <button class="btn" onClick=${envoyerDemande}>Envoyer la demande</button>

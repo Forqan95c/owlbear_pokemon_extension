@@ -3,7 +3,7 @@
 // ============================================================
 import { h, render } from "https://esm.sh/preact@10.23.1";
 import { useHudState } from "./hud-state.js";
-import { html, EcranChargement, EcranErreur, BarreSelectionMJ, BarrePV, Pokedex } from "./ui.js";
+import { html, EcranChargement, EcranErreur, BarreSelectionMJ, BarrePV, Pokedex, ChampTexte, versNombre } from "./ui.js";
 
 function App() {
   const s = useHudState();
@@ -42,13 +42,21 @@ function App() {
                 </div>
                 <div class="entete-dresseur-info">
                   ${s.editable
-                    ? html`<input class="input-nom-dresseur" value=${s.trainerAffiche.nomDresseur} onInput=${(e) => majChamp("nomDresseur", e.target.value)} />`
+                    ? html`<${ChampTexte} class="input-nom-dresseur" value=${s.trainerAffiche.nomDresseur} onCommit=${(v) => majChamp("nomDresseur", v)} />`
                     : html`<div class="nom-dresseur">${s.trainerAffiche.nomDresseur}</div>`}
                   <div class="sous-info-dresseur">
                     ${s.editable
                       ? html`
-                          Niv. <input class="input-mini" type="number" value=${s.trainerAffiche.niveau} onInput=${(e) => majChamp("niveau", +e.target.value)} />
-                          <input class="input-role" placeholder="Rôle / Spécialité" value=${s.trainerAffiche.role} onInput=${(e) => majChamp("role", e.target.value)} />
+                          Niv.
+                          <input
+                            class="input-mini"
+                            type="number"
+                            min="1"
+                            max="100"
+                            value=${s.trainerAffiche.niveau}
+                            onInput=${(e) => majChamp("niveau", Math.max(1, Math.min(100, versNombre(e.target.value, 1))))}
+                          />
+                          <${ChampTexte} class="input-role" placeholder="Rôle / Spécialité" value=${s.trainerAffiche.role} onCommit=${(v) => majChamp("role", v)} />
                         `
                       : html`Niv. ${s.trainerAffiche.niveau} ${s.trainerAffiche.role && `— ${s.trainerAffiche.role}`}`}
                   </div>
@@ -56,7 +64,22 @@ function App() {
                   ${s.editable &&
                   html`<div class="pv-rapides" style=${{ marginTop: "4px" }}>
                     <button class="btn-mini" onClick=${() => majChamp("pv", Math.max(0, s.trainerAffiche.pv - 5))}>−5</button>
+                    <button class="btn-mini" onClick=${() => majChamp("pv", Math.max(0, s.trainerAffiche.pv - 1))}>−1</button>
+                    <button class="btn-mini" onClick=${() => majChamp("pv", Math.min(s.trainerAffiche.pvMax, s.trainerAffiche.pv + 1))}>+1</button>
                     <button class="btn-mini" onClick=${() => majChamp("pv", Math.min(s.trainerAffiche.pvMax, s.trainerAffiche.pv + 5))}>+5</button>
+                    <span class="pv-max-champ">
+                      Max
+                      <input
+                        class="input-mini"
+                        type="number"
+                        min="1"
+                        value=${s.trainerAffiche.pvMax}
+                        onInput=${(e) => {
+                          const pvMax = Math.max(1, versNombre(e.target.value, 1));
+                          s.majTrainer(s.idAffiche, { ...s.trainerAffiche, pvMax, pv: Math.min(s.trainerAffiche.pv, pvMax) });
+                        }}
+                      />
+                    </span>
                   </div>`}
                 </div>
               </div>

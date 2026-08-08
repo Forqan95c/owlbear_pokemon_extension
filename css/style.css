@@ -85,7 +85,7 @@ body {
   border: 3px solid var(--bleu-panel);
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.6), inset 0 0 0 4px var(--bleu-panel);
 }
 
 .carte-ds.sans-entete {
@@ -739,4 +739,119 @@ body {
   font-size: 11px;
   color: #888;
   margin-top: 6px;
+}
+
+/* ---------- Ajouts robustesse / ergonomie / finitions ---------- */
+
+/* Mini pokéball affichée quand un sprite n'est pas encore défini */
+.mini-pokeball {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--rouge) 0%, var(--rouge) 46%, #1c1c1c 46%, #1c1c1c 54%, white 54%, white 100%);
+  border: 2px solid #1c1c1c;
+  position: relative;
+}
+
+.mini-pokeball::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  background: white;
+  border: 2px solid #1c1c1c;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Chips de statut rapide (raccourci sans ouvrir le menu déroulant) */
+.statuts-rapides {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px 8px;
+  flex-wrap: wrap;
+}
+
+.chip-statut {
+  width: 26px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 8px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #666;
+}
+
+.chip-statut.actif {
+  color: white;
+  border-width: 2px;
+}
+
+/* Stepper (−/valeur/+) pour les quantités d'inventaire */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.stepper .inv-qte {
+  width: 40px;
+  text-align: center;
+}
+
+.stepper.lecture .inv-qte-ro {
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Champ PV max du dresseur, aligné avec les boutons rapides */
+.pv-max-champ {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  margin-left: 4px;
+}
+
+.pv-max-champ .input-mini {
+  width: 36px;
+}
+
+/* PP en pastilles, façon jeu vidéo */
+.pp-pastilles {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #666;
+}
+
+.pastille {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid #999;
+  display: inline-block;
+}
+
+.pastille.pleine {
+  background: var(--bleu-clair);
+  border-color: var(--bleu-fonce);
+}
+
+.pastille.vide {
+  background: transparent;
+}
+
+.pp-chiffres {
+  margin-left: 3px;
+  color: #888;
+  font-weight: 700;
 }

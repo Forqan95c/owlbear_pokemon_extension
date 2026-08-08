@@ -4,7 +4,7 @@
 import { h, render } from "https://esm.sh/preact@10.23.1";
 import { useState } from "https://esm.sh/preact@10.23.1/hooks";
 import { useHudState } from "./hud-state.js";
-import { html, EcranChargement, EcranErreur, BarreSelectionMJ, Inventaire, PanneauDes } from "./ui.js";
+import { html, EcranChargement, EcranErreur, BarreSelectionMJ, Inventaire, PanneauDes, versNombre } from "./ui.js";
 
 function App() {
   const s = useHudState();
@@ -55,7 +55,7 @@ function App() {
                 step="0.1"
                 value=${s.settings.metresParCase}
                 onInput=${(e) => {
-                  const settings = { ...s.settings, metresParCase: +e.target.value };
+                  const settings = { ...s.settings, metresParCase: Math.max(0.1, versNombre(e.target.value, s.settings.metresParCase)) };
                   s.setSettingsState(settings);
                   import("./obr.js").then((m) => m.setSettings(settings));
                 }}
