@@ -1,13 +1,13 @@
 {
   "name": "Pokémon — Fiche Dresseur",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 1,
   "description": "Fiche du dresseur (nom, niveau, rôle, PV) et son Pokédex.",
   "author": "Vous",
-  "icon": "/icons/action-fiche.svg",
+  "icon": "/icons/action-fiche-v2.png",
   "action": {
     "title": "Fiche Dresseur",
-    "icon": "/icons/action-fiche.svg",
+    "icon": "/icons/action-fiche-v2.png",
     "popover": "/fiche.html",
     "width": 380,
     "height": 620

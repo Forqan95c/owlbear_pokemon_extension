@@ -4,6 +4,6 @@
   "manifest_version": 1,
   "description": "PV sur tout token (clic droit) + outil de mesure de distance en mètres. Aucune bulle, fonctionnalité de fond.",
   "author": "Vous",
-  "icon": "/icon.svg",
+  "icon": "/icon.png",
   "background_url": "/background.html"
 }

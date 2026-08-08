@@ -1,13 +1,13 @@
 {
   "name": "Pokémon — Sac & Dés",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 1,
   "description": "Inventaire (potions, baies, objets) et dés dirigés par le MJ.",
   "author": "Vous",
-  "icon": "/icons/action-sac.svg",
+  "icon": "/icons/action-sac-v2.png",
   "action": {
     "title": "Sac & Dés",
-    "icon": "/icons/action-sac.svg",
+    "icon": "/icons/action-sac-v2.png",
     "popover": "/inventaire.html",
     "width": 380,
     "height": 560

@@ -14,7 +14,7 @@ OBR.onReady(async () => {
     id: CONTEXT_MENU_HP_ID,
     icons: [
       {
-        icon: "/icons/heart.svg",
+        icon: "/icons/heart.png",
         label: "Points de Vie",
         filter: {
           every: [
@@ -34,13 +34,13 @@ OBR.onReady(async () => {
   // ---------- Outil : Mesurer une distance (en mètres) ----------
   await OBR.tool.create({
     id: TOOL_DISTANCE_ID,
-    icons: [{ icon: "/icons/ruler.svg", label: "Mesurer une distance" }],
+    icons: [{ icon: "/icons/ruler.png", label: "Mesurer une distance" }],
     defaultMode: TOOL_DISTANCE_MODE_ID,
   });
 
   await OBR.tool.createMode({
     id: TOOL_DISTANCE_MODE_ID,
-    icons: [{ icon: "/icons/ruler.svg", label: "Mesurer une distance" }],
+    icons: [{ icon: "/icons/ruler.png", label: "Mesurer une distance" }],
     cursors: [{ cursor: "crosshair" }],
     async onToolClick(context, event) {
       const metadata = await OBR.tool.getMetadata(TOOL_DISTANCE_ID);
