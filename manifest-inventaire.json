@@ -1,10 +1,9 @@
 {
   "name": "Pokémon — Sac & Dés",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "manifest_version": 1,
   "description": "Inventaire (potions, baies, objets) et dés dirigés par le MJ.",
-  "author": "Forqan",
-  "homepage_url": "https://cool-genie-255ffc.netlify.app/",
+  "author": "Vous",
   "icon": "/icons/action-sac.svg",
   "action": {
     "title": "Sac & Dés",

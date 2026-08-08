@@ -1,10 +1,9 @@
 {
   "name": "Pokémon — Fiche Dresseur",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "manifest_version": 1,
   "description": "Fiche du dresseur (nom, niveau, rôle, PV) et son Pokédex.",
-  "author": "Forqan",
-  "homepage_url": "https://cool-genie-255ffc.netlify.app/",
+  "author": "Vous",
   "icon": "/icons/action-fiche.svg",
   "action": {
     "title": "Fiche Dresseur",

@@ -7,9 +7,6 @@
 import OBR, { buildCurve, isImage } from "https://esm.sh/@owlbear-rodeo/sdk@3.1.0";
 import { CONTEXT_MENU_HP_ID, TOOL_DISTANCE_ID, TOOL_DISTANCE_MODE_ID, METADATA_SETTINGS_KEY } from "./data.js";
 
-// Racine de l'extension (Netlify à la racine ou GitHub Pages en sous-dossier)
-const BASE = new URL(".", window.location.href).href.replace(/\/$/, "");
-
 OBR.onReady(async () => {
   try {
   // ---------- Menu contextuel : Points de Vie ----------
@@ -17,7 +14,7 @@ OBR.onReady(async () => {
     id: CONTEXT_MENU_HP_ID,
     icons: [
       {
-        icon: `${BASE}/icons/heart.svg`,
+        icon: "/icons/heart.svg",
         label: "Points de Vie",
         filter: {
           every: [
@@ -29,7 +26,7 @@ OBR.onReady(async () => {
       },
     ],
     embed: {
-      url: `${BASE}/hp.html`,
+      url: "/hp.html",
       height: 130,
     },
   });
@@ -37,13 +34,13 @@ OBR.onReady(async () => {
   // ---------- Outil : Mesurer une distance (en mètres) ----------
   await OBR.tool.create({
     id: TOOL_DISTANCE_ID,
-    icons: [{ icon: `${BASE}/icons/ruler.svg`, label: "Mesurer une distance" }],
+    icons: [{ icon: "/icons/ruler.svg", label: "Mesurer une distance" }],
     defaultMode: TOOL_DISTANCE_MODE_ID,
   });
 
   await OBR.tool.createMode({
     id: TOOL_DISTANCE_MODE_ID,
-    icons: [{ icon: `${BASE}/icons/ruler.svg`, label: "Mesurer une distance" }],
+    icons: [{ icon: "/icons/ruler.svg", label: "Mesurer une distance" }],
     cursors: [{ cursor: "crosshair" }],
     async onToolClick(context, event) {
       const metadata = await OBR.tool.getMetadata(TOOL_DISTANCE_ID);
